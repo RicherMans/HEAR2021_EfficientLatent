@@ -11,14 +11,13 @@ def load_model(model_file_path: str = None, device: str = None) -> torch.nn.Modu
 
     # Instantiate model
     model = EfficientNet_B2()
-    model.to(torch_device)
+    model = model.to(torch_device)
 
     if model_file_path is None:
         # Download model
         state_dict = torch.hub.load_state_dict_from_url(
             'https://github.com/richermans/HEAR2021_EfficientLatent/releases/download/v0.0.1/effb2.pt',
             progress=True)
-        state_dict = state_dict.to(device)
         model.load_state_dict(state_dict, strict=True)
     else:
         # Set model weights using checkpoint file
