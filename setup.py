@@ -20,7 +20,7 @@ setuptools.setup(
         "torchaudio",
         "numpy==1.19.5",
         "einops",
-        "efficientnet_pytorch",
+        "efficientnet_pytorch==0.7.1",
         "numba==0.48",
     ],
     classifiers=[
