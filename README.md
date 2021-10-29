@@ -10,7 +10,7 @@ The work uses a mixed supervised and self-supervised training regime.
 First install the package:
 
 ```
-python3 -m pip install https://github.com/richermans/HEAR2021_EfficientLatent
+python3 -m pip install git+https://github.com/richermans/HEAR2021_EfficientLatent.git
 ```
 
 
