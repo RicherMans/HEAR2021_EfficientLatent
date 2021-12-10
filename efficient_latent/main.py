@@ -37,9 +37,15 @@ def get_scene_embeddings(x: torch.Tensor, model: torch.nn.Module):
     return embeddings
 
 
-def get_timestamp_embeddings(x: torch.Tensor, model: torch.nn.Module):
+def get_timestamp_embeddings(x: torch.Tensor, model: torch.nn.Module, keep_timesteps: bool = True):
     model.eval()
     with torch.no_grad():
-        time_output, time_stamps = model.segment_embedding(x)
+        time_output, time_stamps = model.segment_embedding(x, keep_timesteps)
     return time_output, time_stamps
 
+
+def get_embeddings(x: torch.Tensor, model: torch.nn.Module, keep_timesteps: bool = True):
+    model.eval()
+    with torch.no_grad():
+        clip_output, time_output, time_stamps = model.get_embeddings(x, keep_timesteps)
+    return clip_output, time_output, time_stamps

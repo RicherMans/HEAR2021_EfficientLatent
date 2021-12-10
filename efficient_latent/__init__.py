@@ -1,4 +1,4 @@
-from .main import load_model, get_scene_embeddings, get_timestamp_embeddings
+from .main import load_model, get_scene_embeddings, get_timestamp_embeddings, get_embeddings
 
 __version__ = "2021.20.10"
 
@@ -11,4 +11,5 @@ __all__ = [
     'load_model',
     'get_scene_embeddings',
     'get_timestamp_embeddings',
+    'get_embeddings'
 ]

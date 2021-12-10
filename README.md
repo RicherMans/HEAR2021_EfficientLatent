@@ -24,8 +24,7 @@ model = efficient_latent.load_model()
 
 audio = torch.randn(1, 16000) # Sampling rate is 16000
 
-time_embeddings = efficient_latent.get_timestamp_embeddings(audio, model)
-clip_embeddings = efficient_latent.get_scene_embeddings(audio, model)
+clip_embeddings, time_embeddings, time_stamps = efficient_latent.get_embeddings(audio, model)
 ```
 
 

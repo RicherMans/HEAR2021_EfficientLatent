@@ -73,20 +73,53 @@ class _EffiNet(EfficientNet):
         x = super().extract_features(x)
         return reduce(x, 'b c f t -> b t c', 'mean'), input_num_frames
 
+    def get_embeddings(
+        self,
+        x: torch.Tensor,
+        keep_timesteps: bool = True
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        n_sounds = x.shape[0]
+        x, num_input_frames = self.forward(x)
+        clips = reduce(x, 'b t d -> b d', 'mean')
+        if keep_timesteps:
+            segments = upsample(x, ratio=32, target_length=num_input_frames)
+
+            time_steps = torch.arange(0,
+                num_input_frames * self.hop_size_in_ms,
+                self.hop_size_in_ms)
+            # Repeat for each batch/nsounds
+            time_steps = repeat(time_steps, 't -> b t', b=n_sounds)
+        else:
+            segments = x
+            time_steps = torch.arange(0,
+                num_input_frames * self.hop_size_in_ms,
+                self.hop_size_in_ms * 32)
+            # Repeat for each batch/nsounds
+            time_steps = repeat(time_steps, 't -> b t', b=n_sounds)
+        return clips, segments, time_steps
+
     def segment_embedding(
         self,
         x: torch.Tensor,
+        keep_timesteps: bool = True
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         n_sounds = x.shape[0]
         # Can also process in parallel but that might blow up some memory for a very long clip
         x, num_input_frames = self.forward(x)
-        x = upsample(x, ratio=32, target_length=num_input_frames)
+        if keep_timesteps:
+            x = upsample(x, ratio=32, target_length=num_input_frames)
 
-        time_steps = torch.arange(0,
-            num_input_frames * self.hop_size_in_ms,
-            self.hop_size_in_ms)
-        # Repeat for each batch/nsounds
-        time_steps = repeat(time_steps, 't -> b t', b=n_sounds)
+            time_steps = torch.arange(0,
+                num_input_frames * self.hop_size_in_ms,
+                self.hop_size_in_ms)
+            # Repeat for each batch/nsounds
+            time_steps = repeat(time_steps, 't -> b t', b=n_sounds)
+        else:
+            time_steps = torch.arange(0,
+                num_input_frames * self.hop_size_in_ms,
+                self.hop_size_in_ms * 32)
+            # Repeat for each batch/nsounds
+            time_steps = repeat(time_steps, 't -> b t', b=n_sounds)
         return x, time_steps
 
     def clip_embedding(self, x: torch.Tensor) -> torch.Tensor:
