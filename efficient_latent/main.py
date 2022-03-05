@@ -30,22 +30,31 @@ def load_model(model_file_path: str = None, device: str = None) -> torch.nn.Modu
     return model
 
 
-def get_scene_embeddings(x: torch.Tensor, model: torch.nn.Module):
-    model.eval()
-    with torch.no_grad():
+def get_scene_embeddings(x: torch.Tensor, model: torch.nn.Module, training_mode: bool = False):
+    if training_mode:
         embeddings = model.clip_embedding(x)
+    else:        
+        model.eval()
+        with torch.no_grad():
+            embeddings = model.clip_embedding(x)
     return embeddings
 
 
-def get_timestamp_embeddings(x: torch.Tensor, model: torch.nn.Module, keep_timesteps: bool = True):
-    model.eval()
-    with torch.no_grad():
+def get_timestamp_embeddings(x: torch.Tensor, model: torch.nn.Module, keep_timesteps: bool = True, training_mode: bool = False):
+    if training_mode:
         time_output, time_stamps = model.segment_embedding(x, keep_timesteps)
+    else:
+        model.eval()
+        with torch.no_grad():
+            time_output, time_stamps = model.segment_embedding(x, keep_timesteps)
     return time_output, time_stamps
 
 
-def get_embeddings(x: torch.Tensor, model: torch.nn.Module, keep_timesteps: bool = True):
-    model.eval()
-    with torch.no_grad():
+def get_embeddings(x: torch.Tensor, model: torch.nn.Module, keep_timesteps: bool = True, training_mode: bool = False):
+    if training_mode:
         clip_output, time_output, time_stamps = model.get_embeddings(x, keep_timesteps)
+    else:
+        model.eval()
+        with torch.no_grad():
+            clip_output, time_output, time_stamps = model.get_embeddings(x, keep_timesteps)
     return clip_output, time_output, time_stamps
